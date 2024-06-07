@@ -160,7 +160,7 @@ static void notifyCallback(
     bool isNotify)
 {
   powerInstantaneous = pData[11] | pData[12] << 8;       // 2 bytes of power
-  Serial.printf("Power = %d\n", powerInstantaneous);
+  //Serial.printf("Power = %d\n", powerInstantaneous);
   powerInstantaneous = powerInstantaneous * powerScale;  //power value correction
   cadenceInstantaneous = (pData[4] | pData[5] << 8) / 2; // 2 bytes of power in 0.5 resolution RPM, convert to RPM
   resistance = pData[9];                                 // 1 byte of resistance
@@ -228,6 +228,7 @@ bool connectToServer()
 
   if (pRemoteCharacteristic->canNotify())
     pRemoteCharacteristic->registerForNotify(notifyCallback);
+    //pRemoteCharacteristic->subscribe(notifyCallback);
 
   connected = true;
   return true;
@@ -368,7 +369,11 @@ void loop()
     }
     else
     {
-      Serial.println("We have failed to connect to the server; there is nothin more we will do.");
+      Serial.println("We have failed to connect to the server; retrying in 5s.");
+      //Serial.println("--- Couldn`t find YESOUL device, restarting in 10s");
+      //sleep(10);
+      delay(5000);
+      ESP.restart();
     }
     doConnect = false;
   }
@@ -411,5 +416,5 @@ void loop()
   if (pServer->getConnectedCount() == 0)
   {
     powerInstantaneous = 0;
+    }
   }
-}
